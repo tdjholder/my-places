@@ -19,7 +19,6 @@ import Chart from 'react-google-charts';
   
 
 export const Map = ({data}: MapProps) => {
-
     return <Chart
         chartType="GeoChart"
         data={data}

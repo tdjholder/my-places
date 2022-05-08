@@ -1,7 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Checkbox, Container, FormControlLabel, FormGroup, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
-import './Countries.css';
 
 import { continents, countries, Country } from 'countries-list';
   
@@ -11,21 +10,14 @@ const groupedCountries = Object.values(countries).reduce(function (r, a) {
     return r;
 }, Object.create(null));
 
-  export const options = {
-    backgroundColor: "#dbdbdb",
-    datalessRegionColor: "#7e7f80",
-    defaultColor: "#f5f5f5",
-    magnifyingGlass: {enable: true},
-    enableRegionInteractivity: true
-  };
-
-  type MapProps = {
+  type CountriesProps = {
       data: any[];
       setData: (data: any[]) => void;
   }
 
 
-export const Countries = ({data, setData}: MapProps) => {
+
+export const Countries = ({data, setData}: CountriesProps) => {
 
     const addCountry = (name: string) => {
         setData([...data, [name, 1]]);
@@ -33,19 +25,18 @@ export const Countries = ({data, setData}: MapProps) => {
 
     const removeCountry = (name: string) => {
         setData(data.filter((row: any) => {
-            const [country, ...rest] = row;
+            const [country] = row;
             return country !== name;
         }))
 
     }
      
 
-    return <Container sx={{"marginTop": "25px"}}>{Object.keys(groupedCountries).map((continent: string) => {
+    return <Container sx={{"marginTop": "25px"}}>{Object.keys(groupedCountries).sort().map((continent: string) => {
         if(continent === 'AN'){
             return <React.Fragment/>
         }
         
-
         return <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -57,8 +48,21 @@ export const Countries = ({data, setData}: MapProps) => {
         </AccordionSummary>
         <AccordionDetails>
             <FormGroup>
-          {groupedCountries[continent].map((country: Country) => {
-                  return  <FormControlLabel control={<Checkbox id={country.name} onClick={(e) => {
+          {groupedCountries[continent].sort((a: Country, b: Country) => {
+            if (a.name < b.name){
+              return -1;
+            }
+            if (a.name > b.name){
+              return 1;
+            }
+            return 0;            
+          }).map((country: Country) => {
+                  return  <FormControlLabel checked={
+                    data.some((d: any) => {
+                      const [checked_country] = d;
+                      return country.name === checked_country;
+                    })
+                  } control={<Checkbox id={country.name} onClick={(e) => {
                     //   @ts-ignore
                     const country= e.target.id
                     //   @ts-ignore
